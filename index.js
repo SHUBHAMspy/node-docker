@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const session = require('express-session')
 const redis = require("redis")
 let connectRedis = require('connect-redis')
+const cors = require('cors')
 const { MONGO_USER, MONGO_PASSWORD, MONGO_IP, MONGO_PORT, REDIS_URL, SESSION_SECRET, REDIS_PORT } = require("./config/config");
 const postRouter = require('./routes/postRoutes')
 const userRouter = require('./routes/userRoutes')
@@ -18,15 +19,17 @@ const redisClient = redis.createClient({
   port: REDIS_PORT
 })
 
+app.enable("trust proxy")
+app.use(cors())
 //Configure session middleware
 app.use(session({
   store: new RedisStore({client: redisClient}),
   secret: SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
   cookie: {
+    resave: false,
+    saveUninitialized: false,
     secure: false, // if true only transmit cookie over https
-    httpOnly: false, // if true prevent client side JS from reading the cookie 
+    httpOnly: true, // if true prevent client side JS from reading the cookie 
     maxAge: 1000 * 60 * 10 // session max age in miliseconds
   }
 }))
@@ -41,8 +44,9 @@ mongoose.connect(mongoURL,{
 .catch((e) => console.log(e))
 
 
-app.get("/",(req,res) => {
+app.get("/api/v1",(req,res) => {
   res.send("<h1>Hi! Developer, Welcome to the world of Docker & Devops!!</h1>");
+  console.log("Load Balanced request");
 });
 
 app.use('/api/v1/posts',postRouter)

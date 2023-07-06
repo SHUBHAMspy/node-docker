@@ -3,3 +3,4 @@ Dockerfile
 .gitignore
 .git
 docker-compose*
+architecture.dio

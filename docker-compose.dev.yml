@@ -1,5 +1,8 @@
 version: '3.0'
 services:
+  nginx:
+    ports:
+      - "5000:80"
   node-docker-app:
     build:
       context: .
@@ -12,6 +15,7 @@ services:
       - NODE_ENV=development
       - MONGO_USER=shubhamSpy
       - MONGO_PASSWORD=shubham%231
+      - SESSION_SECRET=secret
     command: npm run dev
     
   mongo:
